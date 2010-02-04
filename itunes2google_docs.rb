@@ -196,7 +196,7 @@ def fetch_itunes_connect_document(options)
      end
     
     if options[:weekly] || options[:daily]
-        page = agent.click page.link_with(:text => 'Sales/Trend Reports')
+        page = agent.click page.link_with(:text => 'Sales and Trends')
         page2 = agent.get('https://itts.apple.com/cgi-bin/WebObjects/Piano.woa')
         form2 = page2.form('frmVendorPage')
         form2.hiddenSubmitTypeName = 'Summary'
