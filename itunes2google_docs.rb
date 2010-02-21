@@ -6,7 +6,7 @@ require 'gdata'
 require 'optparse'
 require 'xmlsimple'
 require 'ruby-debug'
-require './itunes2google_docs_defaults.rb'
+require './itunes2google_docs_defaults_ayogo.rb'
 
 # Parse command line options
 def parse_command_line
@@ -24,55 +24,60 @@ def parse_command_line
     opts.banner += "\nOptions are:\n"
  
     options[:itunes_username] = nil
-    opts.on('-u', '--itunes_username', 'itunes username VALUE') do |value|
+    opts.on('-u', '--itunes_username VALUE', 'itunes username VALUE') do |value|
       options[:itunes_username] = value
     end
    
      options[:itunes_password] = nil
-    opts.on('-p', '--itunes_password', 'itunes password VALUE') do |value|
+    opts.on('-p', '--itunes_password VALUE', 'itunes password VALUE') do |value|
       options[:itunes_password] = value
     end
     
        options[:google_username] = nil
-    opts.on('-x', '--google_username', 'google username VALUE') do |value|
+    opts.on('-x', '--google_username VALUE', 'google username VALUE') do |value|
       options[:google_username] = value
     end
    
      options[:google_password] = nil
-    opts.on('-y', '--google_password', 'google password VALUE') do |value|
+    opts.on('-y', '--google_password VALUE', 'google password VALUE') do |value|
       options[:google_password] = value
     end
     
     options[:google_docs_daily_folder] = nil
-    opts.on('-a', '--google_docs_daily_folder', 'google docs daily folder VALUE') do |value|
+    opts.on('-a', '--google_docs_daily_folder VALUE', 'google docs daily folder VALUE') do |value|
       options[:google_docs_daily_folder] = value
     end
     
     options[:google_docs_weekly_folder] = nil
-    opts.on('-b', '--google_docs_weekly_folder', 'google docs weekly folder VALUE') do |value|
+    opts.on('-b', '--google_docs_weekly_folder VALUE', 'google docs weekly folder VALUE') do |value|
       options[:google_docs_weekly_folder] = value
     end
 
    options[:google_docs_financials_folder] = nil
-    opts.on('-c', '--google_docs_financials_folder', 'google docs financials folder VALUE') do |value|
+    opts.on('-c', '--google_docs_financials_folder VALUE', 'google docs financials folder VALUE') do |value|
       options[:google_docs_financials_folder] = value
     end
 
    options[:google_spreadsheet_daily_worksheet_url] = nil
-    opts.on('-j', '--google_spreadsheet_daily_worksheet_url', 'google docs spreadsheet daily worksheet url VALUE') do |value|
+    opts.on('-j', '--google_spreadsheet_daily_worksheet_url VALUE', 'google docs spreadsheet daily worksheet url VALUE') do |value|
       options[:google_spreadsheet_daily_worksheet_url] = value
     end
 
    options[:google_spreadsheet_weekly_worksheet_url] = nil
-    opts.on('-e', '--google_spreadsheet_weekly_worksheet_url', 'google docs spreadsheet weekly worksheet url VALUE') do |value|
+    opts.on('-e', '--google_spreadsheet_weekly_worksheet_url VALUE', 'google docs spreadsheet weekly worksheet url VALUE') do |value|
       options[:google_spreadsheet_weekly_worksheet_url] = value
     end
 
     options[:google_spreadsheet_financials_worksheet_url] = nil
-    opts.on('-k', '--google_spreadsheet_financials_worksheet_url', 'google docs spreadsheet financials worksheet url VALUE') do |value|
+    opts.on('-k', '--google_spreadsheet_financials_worksheet_url VALUE', 'google docs spreadsheet financials worksheet url VALUE') do |value|
       options[:google_spreadsheet_financials_worksheet_url] = value
     end
 
+    options[:item] = 0
+      opts.on( '-i', '--item VALUE', 'item in daily weekly list VALUE' ) do |value|
+        options[:item] = value.to_i
+      end
+      
       options[:verbose] = false
       opts.on( '-v', '--verbose', 'Output more information' ) do
         options[:verbose] = true
@@ -87,6 +92,7 @@ def parse_command_line
       opts.on( '-d', '--daily', 'Do Daily summary' ) do
         options[:daily] = true
       end
+      
       
        options[:financials] = false
       opts.on( '-$', '--financials', 'Do financials' ) do
@@ -109,7 +115,7 @@ def parse_command_line
       end
 
       options[:logfile] = nil
-      opts.on( '-l', '--log FILE', 'Write log to FILE' ) do|file|
+      opts.on( '-l', '--log FILE', 'Write log to FILE' ) do |file|
          options[:logfile] = file
         end
         
@@ -201,11 +207,13 @@ def fetch_itunes_connect_document(options)
         form2 = page2.form('frmVendorPage')
         form2.hiddenSubmitTypeName = 'Summary'
         if options[:daily]
-            form2.field_with(:name => '11.11').options[3].select
+            debugger
+            form2.field_with(:name => '17.11').options[3].select
             form2.hiddenDayOrWeekSelection = 'Daily'
             page3 = agent.submit(form2) #, form2.buttons[2])
             form3 = page3.form('frmVendorPage')
-            form3.field_with(:name => '11.13.1').options[0].select
+            debugger
+            form3.field_with(:name => '17.13.1').options[options[:item]].select
             form3.hiddenSubmitTypeName = 'Download'
             page4 = agent.submit(form3) #, form3.buttons[2])
             options[:filename] = page4.filename.sub(/\.gz/, "") if options[:filename].nil?
@@ -215,11 +223,11 @@ def fetch_itunes_connect_document(options)
             f.close
         end
         if options[:weekly]
-            form2.field_with(:name => '11.11').options[2].select
+            form2.field_with(:name => '17.11').options[2].select
             form2.hiddenDayOrWeekSelection = 'Weekly'
             page3 = agent.submit(form2) #, form2.buttons[2])
             form3 = page3.form('frmVendorPage')
-            form3.field_with(:name => '11.15.1').options[0].select
+            form3.field_with(:name => '17.15.1').options[options[:item]].select
             form3.hiddenSubmitTypeName = 'Download'
             page4 = agent.submit(form3) #, form3.buttons[2])
             options[:filename] = page4.filename.sub(/\.gz/, "") if options[:filename].nil?
