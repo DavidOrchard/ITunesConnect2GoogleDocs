@@ -5,8 +5,7 @@ require 'mechanize'
 require 'gdata'
 require 'optparse'
 require 'xmlsimple'
-require 'ruby-debug'
-require './itunes2google_docs_defaults_ayogo.rb'
+require './itunes2google_docs_defaults.rb'
 
 # Parse command line options
 def parse_command_line
@@ -207,12 +206,10 @@ def fetch_itunes_connect_document(options)
         form2 = page2.form('frmVendorPage')
         form2.hiddenSubmitTypeName = 'Summary'
         if options[:daily]
-            debugger
             form2.field_with(:name => '17.11').options[3].select
             form2.hiddenDayOrWeekSelection = 'Daily'
             page3 = agent.submit(form2) #, form2.buttons[2])
             form3 = page3.form('frmVendorPage')
-            debugger
             form3.field_with(:name => '17.13.1').options[options[:item]].select
             form3.hiddenSubmitTypeName = 'Download'
             page4 = agent.submit(form3) #, form3.buttons[2])
